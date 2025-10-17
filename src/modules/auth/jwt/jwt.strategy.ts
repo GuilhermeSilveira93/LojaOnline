@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
+import { Role } from '@prisma/client'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { EnvService } from 'src/common/Env/env.service'
 import * as zod from 'zod'
@@ -7,10 +8,8 @@ const tokenSchema = zod.object({
   sub: zod.string(),
   ID_USUARIO: zod.string(),
   S_NOME: zod.string(),
-  ID_GRUPO: zod.string(),
-  st_grupo: zod.object({
-    N_NIVEL: zod.number(),
-  }),
+  S_EMAIL: zod.string(),
+  E_ROLE: zod.string(),
 })
 export type tokenSchemaType = zod.infer<typeof tokenSchema>
 
@@ -26,6 +25,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: tokenSchemaType) {
-    return tokenSchema.parse(payload)
+    const res = tokenSchema.safeParse(payload);
+    if (!res.success) {
+      throw new UnauthorizedException('Invalid JWT payload'); // evita 500
+    }
+    const p = res.data;
+    return p
   }
 }

@@ -10,9 +10,11 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+    console.log('required', required)
     if (!required || required.length === 0) return true;
     const { user } = context.switchToHttp().getRequest();
-    if (!user || !required.includes(user.role)) throw new ForbiddenException('Acesso Negado');
+    console.log(user)
+    if (!user || !required.includes(user.E_ROLE)) throw new ForbiddenException('Acesso Negado');
     return true;
   }
 }

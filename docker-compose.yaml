@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: dbMolla
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: molla_db
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    volumes:
+      - dbMolla:/var/lib/postgresql
+volumes:
+  dbMolla:

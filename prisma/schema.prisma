@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  ID_USUARIO   String   @id @default(uuid())
+  S_NOME       String
+  S_EMAIL      String   @unique
+  S_HASH_SENHA String
+  E_ROLE       Role
+  S_ATIVO      Boolean  @default(true)
+  D_CREATEDAT  DateTime @default(now())
+  D_UPDATEDAT  DateTime @updatedAt
+
+  pedidos Pedido[] @relation("VendedorPedidos")
+}
+
+model Produto {
+  ID_PRODUTO  String   @id @default(uuid())
+  S_NOME      String
+  S_DESCRICAO String?
+  N_PRECOBASE Decimal  @db.Decimal(10, 2)
+  N_DESCONTO  Int      @default(0)
+  N_ESTOQUE   Int      @default(0)
+  S_ATIVO     Boolean  @default(true)
+  D_CREATEDAT DateTime @default(now())
+  D_UPDATEDAT DateTime @updatedAt
+
+  PedidoItem PedidoItem[]
+}
+
+model Cliente {
+  ID_CLIENTE  String    @id @default(uuid())
+  S_NOME      String
+  S_EMAIL     String
+  S_DOCUMENTO String
+  S_TELEFONE  String?
+  S_ENDERECO  Endereco?
+  D_CREATEDAT DateTime  @default(now())
+  D_UPDATEDAT DateTime  @updatedAt
+
+  Pedido Pedido[]
+}
+
+model Endereco {
+  ID_ENDERECO   String  @id @default(uuid())
+  S_RUA         String
+  S_NUMERO      String
+  S_COMPLEMENTO String?
+  S_BAIRRO      String
+  S_CIDADE      String
+  S_UF          String
+  S_CEP         String
+
+  ID_CLIENTE String  @unique
+  Cliente    Cliente @relation(fields: [ID_CLIENTE], references: [ID_CLIENTE])
+}
+
+model Pedido {
+  ID_PEDIDO       String       @id @default(uuid())
+  ID_CLIENTE      String
+  ID_USUARIO      String
+  S_STATUS        PedidoStatus @default(CRIADO)
+  N_TOTALBRUTO    Decimal      @db.Decimal(10, 2)
+  N_TOTALDESCONTO Decimal      @db.Decimal(10, 2)
+  N_TOTAL_LIQUIDO Decimal      @db.Decimal(10, 2)
+  Pagamento       Pagamento?
+  D_CREATEDAT     DateTime     @default(now())
+  D_UPDATEDAT     DateTime     @updatedAt
+
+  Cliente    Cliente      @relation(fields: [ID_CLIENTE], references: [ID_CLIENTE])
+  User       User         @relation("VendedorPedidos", fields: [ID_USUARIO], references: [ID_USUARIO])
+  PedidoItem PedidoItem[]
+}
+
+model PedidoItem {
+  ID_PEDIDO_ITEM             String  @id @default(uuid())
+  S_NOME_SNAPSHOT            String
+  N_PREOCO_UNITARIO_SNAPSHOT Decimal @db.Decimal(10, 2)
+  N_QUANTIDADE               Int
+  N_SUBTOTAL                 Decimal @db.Decimal(10, 2)
+
+  ID_PEDIDO  String
+  Pedido     Pedido  @relation(fields: [ID_PEDIDO], references: [ID_PEDIDO])
+  ID_PRODUTO String
+  produto    Produto @relation(fields: [ID_PRODUTO], references: [ID_PRODUTO])
+}
+
+model Pagamento {
+  ID_PAGAMENTO String          @id @default(uuid())
+  S_METODO     String
+  S_STATUS     PagamentoStatus @default(PENDENTE)
+  ID_TRANSACAO String?
+
+  ID_PEDIDO String @unique
+  Pedido    Pedido @relation(fields: [ID_PEDIDO], references: [ID_PEDIDO])
+}
+
+enum Role {
+  ADMIN
+  VENDEDOR
+}
+
+enum PedidoStatus {
+  CRIADO
+  EM_PROCESSAMENTO
+  ENVIADO
+  ENTREGUE
+}
+
+enum PagamentoStatus {
+  PENDENTE
+  APROVADO
+  RECUSADO
+}

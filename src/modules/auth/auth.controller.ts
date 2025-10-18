@@ -22,8 +22,8 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Post('create')
-  async createUser(@Body() dto: CreateDto) {
-    return this.auth.createUser(dto.email, dto.senha, dto.role);
+  async create(@Body() dto: CreateDto) {
+    return this.auth.create(dto.email, dto.senha, dto.role);
   }
 
   @Post('login')

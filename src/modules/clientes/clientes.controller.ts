@@ -21,7 +21,7 @@ import { Role, Roles } from 'src/common/roles/roles.decorator';
 @Roles(Role.ADMIN)
 @Controller('clientes')
 export class ClientesController {
-  constructor(private service: ClientesService) { }
+  constructor(private service: ClientesService) {}
   @Post() criar(@Body() dto: CriarClienteDto) {
     return this.service.criar(dto);
   }
@@ -34,10 +34,7 @@ export class ClientesController {
     return this.service.findUnique(id);
   }
   @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() dto: AtualizarClienteDto,
-  ) {
+  update(@Param('id') id: string, @Body() dto: AtualizarClienteDto) {
     return this.service.update(id, dto);
   }
   @Delete(':id')

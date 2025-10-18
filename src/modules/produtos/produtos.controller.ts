@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ProdutosService } from './produtos.service';
 import {
-  AplicarDescontoDto,
   AtualizarProdutoDto,
   CriarProdutoDto,
 } from './dto';
@@ -26,25 +25,25 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @Roles(Role.ADMIN)
 @Controller('produtos')
 export class ProdutosController {
-  constructor(private service: ProdutosService) {}
+  constructor(private db: ProdutosService) {}
   @Post()
   create(@Body() dto: CriarProdutoDto) {
-    return this.service.create(dto);
+    return this.db.create(dto);
   }
   @Get()
   findMany() {
-    return this.service.findMany();
+    return this.db.findMany();
   }
   @Get(':id')
   findUnique(@Param('id') id: string) {
-    return this.service.findUnique(id);
+    return this.db.findUnique(id);
   }
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: AtualizarProdutoDto) {
-    return this.service.update(id, dto);
+    return this.db.update(id, dto);
   }
   @Delete(':id')
   delete(@Param('id') id: string) {
-    return this.service.delete(id);
+    return this.db.delete(id);
   }
 }

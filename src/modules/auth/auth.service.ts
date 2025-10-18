@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   BadRequestException,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,9 +15,9 @@ export class AuthService {
   constructor(
     private db: PrismaService,
     private jwt: JwtService,
-  ) {}
+  ) { }
 
-  async createUser(email: string, senha: string, role: Role) {
+  async create(email: string, senha: string, role: Role) {
     const senhaHash = await bcrypt.hash(senha, 10);
     try {
       await this.db.user.create({
@@ -44,7 +45,7 @@ export class AuthService {
 
   async login(email: string, senha: string) {
     const user = await this.db.user.findUnique({ where: { email } });
-    if (!user) throw new UnauthorizedException();
+    if (!user) throw new NotFoundException();
     const ok = await bcrypt.compare(senha, user.senhaHash);
     if (!ok) throw new UnauthorizedException();
 

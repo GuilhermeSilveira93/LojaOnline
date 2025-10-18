@@ -4,6 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import PrismaModule from 'src/shared/prisma.module';
 import EnvModule from 'src/common/Env/env.module';
 import { ProdutosModule } from './produtos/produtos.module';
+import { ClientesModule } from './clientes/clientes.module';
+import { CarrinhoModule } from './carrinho/carrinho.module';
+import { PedidosModule } from './pedidos/pedidos.module';
 
 @Module({
   imports: [
@@ -12,6 +15,9 @@ import { ProdutosModule } from './produtos/produtos.module';
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     ProdutosModule,
+    ClientesModule,
+    CarrinhoModule,
+    PedidosModule
   ],
 })
 export class AppModule {}

@@ -6,7 +6,7 @@ Regras da aplicação
 • - Deve ser possível realizar login com e-mail e senha - feito
 • - Deve ser possível realizar o CRUD dos produtos - feito
 • - Deve ser possível realizar o CRUD dos clientes - feito
-• - Deve ser possível realizar o CRUD dos pedidos
+• - Deve ser possível realizar o CRUD dos pedidos - 
 • - Deve ser possível adicionar produtos ao carrinho de compras
 • - Deve ser possível finalizar a compra e gerar um pedido
 • - Deve ser possível marcar um pedido como em processamento, enviado ou entregue

@@ -1,3 +1,129 @@
+/**
+ * generator client {
+ * provider = "prisma-client-js"
+ * }
+ * datasource db {
+ * provider = "postgresql"
+ * url      = env("DATABASE_URL")
+ * }
+ * model User {
+ * id           String   @id @default(uuid())
+ * S_NOME       String
+ * email      String   @unique
+ * S_HASH_SENHA String
+ * E_ROLE       Role
+ * S_ATIVO      Boolean  @default(true)
+ * createdAt  DateTime @default(now())
+ * updatedAt  DateTime @updatedAt
+ * pedidos  Pedido[]  @relation("VendedorPedidos")
+ * carrinho Carrinho?
+ * }
+ * model Produto {
+ * ID_PRODUTO  String   @id @default(uuid())
+ * S_NOME      String
+ * S_DESCRICAO String?
+ * N_PRECOBASE Decimal  @db.Decimal(10, 2)
+ * N_DESCONTO  Int      @default(0)
+ * N_ESTOQUE   Int      @default(0)
+ * S_ATIVO     Boolean  @default(true)
+ * createdAt DateTime @default(now())
+ * updatedAt DateTime @updatedAt
+ * PedidoItem   PedidoItem[]
+ * CarrinhoItem CarrinhoItem[]
+ * }
+ * model Cliente {
+ * ID_CLIENTE  String    @id @default(uuid())
+ * S_NOME      String
+ * email     String
+ * documento String
+ * telefone  String?
+ * endereco  Endereco?
+ * createdAt DateTime  @default(now())
+ * updatedAt DateTime  @updatedAt
+ * Pedido Pedido[]
+ * }
+ * model Endereco {
+ * id   String  @id @default(uuid())
+ * S_RUA         String
+ * S_NUMERO      String
+ * S_COMPLEMENTO String?
+ * S_BAIRRO      String
+ * S_CIDADE      String
+ * S_UF          String
+ * S_CEP         String
+ * ID_CLIENTE String  @unique
+ * Cliente    Cliente @relation(fields: [ID_CLIENTE], references: [ID_CLIENTE])
+ * }
+ * model Pedido {
+ * ID_PEDIDO       String       @id @default(uuid())
+ * ID_CLIENTE      String
+ * id              String
+ * S_STATUS        PedidoStatus @default(CRIADO)
+ * N_TOTALBRUTO    Decimal      @db.Decimal(10, 2)
+ * N_TOTALDESCONTO Decimal      @db.Decimal(10, 2)
+ * N_TOTAL_LIQUIDO Decimal      @db.Decimal(10, 2)
+ * Pagamento       Pagamento?
+ * createdAt     DateTime     @default(now())
+ * updatedAt     DateTime     @updatedAt
+ * Cliente    Cliente      @relation(fields: [ID_CLIENTE], references: [ID_CLIENTE])
+ * User       User         @relation("VendedorPedidos", fields: [id], references: [id])
+ * PedidoItem PedidoItem[]
+ * }
+ * model PedidoItem {
+ * ID_PEDIDO_ITEM             String  @id @default(uuid())
+ * S_NOME_SNAPSHOT            String
+ * N_PREOCO_UNITARIO_SNAPSHOT Decimal @db.Decimal(10, 2)
+ * N_QUANTIDADE               Int
+ * N_SUBTOTAL                 Decimal @db.Decimal(10, 2)
+ * ID_PEDIDO  String
+ * Pedido     Pedido  @relation(fields: [ID_PEDIDO], references: [ID_PEDIDO])
+ * ID_PRODUTO String
+ * produto    Produto @relation(fields: [ID_PRODUTO], references: [ID_PRODUTO])
+ * }
+ * model Pagamento {
+ * ID_PAGAMENTO String          @id @default(uuid())
+ * S_METODO     String
+ * S_STATUS     PagamentoStatus @default(PENDENTE)
+ * ID_TRANSACAO String?
+ * ID_PEDIDO String @unique
+ * Pedido    Pedido @relation(fields: [ID_PEDIDO], references: [ID_PEDIDO])
+ * }
+ * model Carrinho {
+ * ID_CARRINHO String   @id @default(uuid())
+ * id          String   @unique
+ * createdAt DateTime @default(now())
+ * updatedAt DateTime @updatedAt
+ * User         User           @relation(fields: [id], references: [id])
+ * CarrinhoItem CarrinhoItem[]
+ * }
+ * model CarrinhoItem {
+ * ID_CARRINHO_ITEM          String  @id @default(uuid())
+ * ID_CARRINHO               String
+ * ID_PRODUTO                String
+ * N_QUANTIDADE              Int     @default(1)
+ * N_PRECO_UNITARIO_SNAPSHOT Decimal @db.Decimal(10, 2)
+ * N_SUBTOTAL                Decimal @db.Decimal(10, 2)
+ * Carrinho Carrinho @relation(fields: [ID_CARRINHO], references: [ID_CARRINHO])
+ * Produto  Produto  @relation(fields: [ID_PRODUTO], references: [ID_PRODUTO])
+ * @@unique([ID_CARRINHO, ID_PRODUTO])
+ * }
+ * enum Role {
+ * ADMIN
+ * VENDEDOR
+ * }
+ * enum PedidoStatus {
+ * CRIADO
+ * EM_PROCESSAMENTO
+ * ENVIADO
+ * ENTREGUE
+ * }
+ * enum PagamentoStatus {
+ * PENDENTE
+ * APROVADO
+ * RECUSADO
+ * }
+ */
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,97 +134,125 @@ datasource db {
 }
 
 model User {
-  ID_USUARIO   String   @id @default(uuid())
-  S_NOME       String
-  S_EMAIL      String   @unique
-  S_HASH_SENHA String
-  E_ROLE       Role
-  S_ATIVO      Boolean  @default(true)
-  D_CREATEDAT  DateTime @default(now())
-  D_UPDATEDAT  DateTime @updatedAt
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senhaHash String
+  role      Role
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   pedidos Pedido[] @relation("VendedorPedidos")
+
+  carrinho Carrinho?
 }
 
 model Produto {
-  ID_PRODUTO  String   @id @default(uuid())
-  S_NOME      String
-  S_DESCRICAO String?
-  N_PRECOBASE Decimal  @db.Decimal(10, 2)
-  N_DESCONTO  Int      @default(0)
-  N_ESTOQUE   Int      @default(0)
-  S_ATIVO     Boolean  @default(true)
-  D_CREATEDAT DateTime @default(now())
-  D_UPDATEDAT DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  nome               String
+  descricao          String?
+  precoBase          Decimal  @db.Decimal(10, 2)
+  descontoPercentual Int      @default(0)
+  estoque            Int      @default(0)
+  ativo              Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  PedidoItem PedidoItem[]
+  itens        PedidoItem[]
+  CarrinhoItem CarrinhoItem[]
 }
 
 model Cliente {
-  ID_CLIENTE  String    @id @default(uuid())
-  S_NOME      String
-  S_EMAIL     String
-  S_DOCUMENTO String
-  S_TELEFONE  String?
-  S_ENDERECO  Endereco?
-  D_CREATEDAT DateTime  @default(now())
-  D_UPDATEDAT DateTime  @updatedAt
+  id        String    @id @default(uuid())
+  nome      String
+  email     String
+  documento String
+  telefone  String?
+  endereco  Endereco?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   Pedido Pedido[]
 }
 
 model Endereco {
-  ID_ENDERECO   String  @id @default(uuid())
-  S_RUA         String
-  S_NUMERO      String
-  S_COMPLEMENTO String?
-  S_BAIRRO      String
-  S_CIDADE      String
-  S_UF          String
-  S_CEP         String
+  id          String  @id @default(uuid())
+  rua         String
+  numero      String
+  complemento String?
+  bairro      String
+  cidade      String
+  uf          String
+  cep         String
 
-  ID_CLIENTE String  @unique
-  Cliente    Cliente @relation(fields: [ID_CLIENTE], references: [ID_CLIENTE])
+  id_cliente String  @unique
+  Cliente    Cliente @relation(fields: [id_cliente], references: [id])
 }
 
 model Pedido {
-  ID_PEDIDO       String       @id @default(uuid())
-  ID_CLIENTE      String
-  ID_USUARIO      String
-  S_STATUS        PedidoStatus @default(CRIADO)
-  N_TOTALBRUTO    Decimal      @db.Decimal(10, 2)
-  N_TOTALDESCONTO Decimal      @db.Decimal(10, 2)
-  N_TOTAL_LIQUIDO Decimal      @db.Decimal(10, 2)
-  Pagamento       Pagamento?
-  D_CREATEDAT     DateTime     @default(now())
-  D_UPDATEDAT     DateTime     @updatedAt
+  id            String       @id @default(uuid())
+  clienteId     String
+  vendedorId    String
+  status        PedidoStatus @default(CRIADO)
+  totalBruto    Decimal      @db.Decimal(10, 2)
+  totalDesconto Decimal      @db.Decimal(10, 2)
+  totalLiquido  Decimal      @db.Decimal(10, 2)
+  pagamento     Pagamento?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
-  Cliente    Cliente      @relation(fields: [ID_CLIENTE], references: [ID_CLIENTE])
-  User       User         @relation("VendedorPedidos", fields: [ID_USUARIO], references: [ID_USUARIO])
+  Cliente    Cliente      @relation(fields: [clienteId], references: [id])
+  User       User         @relation("VendedorPedidos", fields: [vendedorId], references: [id])
   PedidoItem PedidoItem[]
 }
 
 model PedidoItem {
-  ID_PEDIDO_ITEM             String  @id @default(uuid())
-  S_NOME_SNAPSHOT            String
-  N_PREOCO_UNITARIO_SNAPSHOT Decimal @db.Decimal(10, 2)
-  N_QUANTIDADE               Int
-  N_SUBTOTAL                 Decimal @db.Decimal(10, 2)
+  id                    String  @id @default(uuid())
+  pedidoId              String
+  produtoId             String
+  nomeSnapshot          String
+  precoUnitarioSnapshot Decimal @db.Decimal(10, 2)
+  quantidade            Int
+  subtotal              Decimal @db.Decimal(10, 2)
 
-  ID_PEDIDO  String
-  Pedido     Pedido  @relation(fields: [ID_PEDIDO], references: [ID_PEDIDO])
-  ID_PRODUTO String
-  produto    Produto @relation(fields: [ID_PRODUTO], references: [ID_PRODUTO])
+  Pedido  Pedido  @relation(fields: [pedidoId], references: [id])
+  Produto Produto @relation(fields: [produtoId], references: [id])
 }
 
 model Pagamento {
-  ID_PAGAMENTO String          @id @default(uuid())
-  S_METODO     String
-  S_STATUS     PagamentoStatus @default(PENDENTE)
-  ID_TRANSACAO String?
+  id          String          @id @default(uuid())
+  pedidoId    String          @unique
+  metodo      String
+  status      PagamentoStatus @default(PENDENTE)
+  transacaoId String?
 
-  ID_PEDIDO String @unique
-  Pedido    Pedido @relation(fields: [ID_PEDIDO], references: [ID_PEDIDO])
+  Pedido Pedido @relation(fields: [pedidoId], references: [id])
+}
+
+model Carrinho {
+  ID_CARRINHO String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  id_usuario  String   @unique
+
+  User         User           @relation(fields: [id_usuario], references: [id])
+  CarrinhoItem CarrinhoItem[]
+}
+
+model CarrinhoItem {
+  ID_CARRINHO_ITEM          String  @id @default(uuid())
+  N_QUANTIDADE              Int     @default(1)
+  N_PRECO_UNITARIO_SNAPSHOT Decimal @db.Decimal(10, 2)
+  N_SUBTOTAL                Decimal @db.Decimal(10, 2)
+
+  ID_CARRINHO String
+  Carrinho    Carrinho @relation(fields: [ID_CARRINHO], references: [ID_CARRINHO])
+
+  ID_PRODUTO String
+  Produto    Produto @relation(fields: [ID_PRODUTO], references: [id])
+
+  @@unique([ID_CARRINHO, ID_PRODUTO])
 }
 
 enum Role {

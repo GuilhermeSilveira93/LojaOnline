@@ -4,5 +4,5 @@ import { Role } from '@prisma/client';
 
 export class CreateDto extends LoginDto {
   @IsEnum(Role)
-  role: Role
+  role: Role;
 }

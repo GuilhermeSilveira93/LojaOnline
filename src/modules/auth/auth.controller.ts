@@ -1,4 +1,12 @@
-import { Body, Controller, Post, UseGuards, Request, ForbiddenException, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Param,
+  Patch,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
@@ -6,10 +14,12 @@ import { RolesGuard } from 'src/common/roles/roles.guard';
 import { Role, Roles } from 'src/common/roles/roles.decorator';
 import { ResetSenhaDto } from './dto/resetSebga.dto';
 import { CreateDto } from './dto/createUser.dto';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) { }
+  constructor(private readonly auth: AuthService) {}
 
   @Post('create')
   async createUser(@Body() dto: CreateDto) {
@@ -27,10 +37,14 @@ export class AuthController {
     return this.auth.changePassword(req.user.userId, body.novaSenha);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Patch('change-password/:userId')
-  async adminChangePassword(@Param('userId') userId: string, @Body() body: ResetSenhaDto) {
+  async adminChangePassword(
+    @Param('userId') userId: string,
+    @Body() body: ResetSenhaDto,
+  ) {
     return this.auth.adminChangePassword(userId, body.novaSenha);
   }
 }

@@ -1,4 +1,4 @@
-import * as z from 'zod'
+import * as z from 'zod';
 export const envSchema = z.object({
   JWT_PRIVATE_KEY: z
     .string({ error: 'É necessário passar uma chave!' })
@@ -10,5 +10,5 @@ export const envSchema = z.object({
   PORT: z.string().default('3002').transform(Number),
   EMAIL_FROM: z.email(),
   EMAIL_PASS: z.string().min(8).max(64),
-})
-export type EnvType = z.infer<typeof envSchema>
+});
+export type EnvType = z.infer<typeof envSchema>;

@@ -50,10 +50,7 @@ export class AuthService {
 
     return {
       ...user,
-      token: this.jwt.sign(
-        { sub: user.id, ...user },
-        { algorithm: 'HS256' },
-      ),
+      token: this.jwt.sign({ sub: user.id, ...user }, { algorithm: 'HS256' }),
     };
   }
 

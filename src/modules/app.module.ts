@@ -11,7 +11,7 @@ import { ProdutosModule } from './produtos/produtos.module';
     PrismaModule,
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
-    ProdutosModule
+    ProdutosModule,
   ],
 })
 export class AppModule {}

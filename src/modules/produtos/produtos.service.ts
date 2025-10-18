@@ -8,7 +8,7 @@ import {
 
 @Injectable()
 export class ProdutosService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   create(dto: CriarProdutoDto) {
     return this.prisma.produto.create({ data: dto });

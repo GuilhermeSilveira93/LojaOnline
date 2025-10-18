@@ -4,35 +4,29 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ProdutosService } from './produtos.service';
-import {
-  AplicarDescontoDto,
-  AtualizarProdutoDto,
-  CriarProdutoDto,
-} from './dto';
-import { RolesGuard } from 'src/common/roles/roles.guard';
-import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
-import { Role, Roles } from 'src/common/roles/roles.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ClientesService } from './clientes.service';
+import { AtualizarClienteDto, CriarClienteDto } from './dto';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import { RolesGuard } from 'src/common/roles/roles.guard';
+import { Role, Roles } from 'src/common/roles/roles.decorator';
 
-@ApiTags('Produtos')
+@ApiTags('Clientes')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
-@Controller('produtos')
-export class ProdutosController {
-  constructor(private service: ProdutosService) {}
-  @Post()
-  create(@Body() dto: CriarProdutoDto) {
-    return this.service.create(dto);
+@Controller('clientes')
+export class ClientesController {
+  constructor(private service: ClientesService) { }
+  @Post() criar(@Body() dto: CriarClienteDto) {
+    return this.service.criar(dto);
   }
   @Get()
-  findMany() {
+  listfindManyar() {
     return this.service.findMany();
   }
   @Get(':id')
@@ -40,7 +34,10 @@ export class ProdutosController {
     return this.service.findUnique(id);
   }
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: AtualizarProdutoDto) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: AtualizarClienteDto,
+  ) {
     return this.service.update(id, dto);
   }
   @Delete(':id')

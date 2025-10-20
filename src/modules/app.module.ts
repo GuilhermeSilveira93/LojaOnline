@@ -12,7 +12,7 @@ import { PedidosModule } from './pedidos/pedidos.module';
   imports: [
     EnvModule,
     PrismaModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
     AuthModule,
     ProdutosModule,
     ClientesModule,

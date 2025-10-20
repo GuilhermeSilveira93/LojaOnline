@@ -40,12 +40,12 @@ export class PedidosController {
   async criar(@Request() req, @Body() dto: CriarPedidoDto) {
     const userId = req.user.sub;
     const carrinho = await this.carrinho.findUnique(userId);
-    if (!carrinho || carrinho?.CarrinhoItem.length === 0)
+    if (!carrinho || carrinho?.data?.CarrinhoItem.length === 0)
       throw new BadRequestException('Carrinho vazio');
     return await this.service.criarAPartirDoCarrinho(
       userId,
       dto.clienteId,
-      carrinho.CarrinhoItem,
+      carrinho?.data?.CarrinhoItem!,
     );
   }
 
@@ -71,6 +71,6 @@ export class PedidosController {
       id,
       dto.status,
     );
-    this.email.NovoStatusPedido(pedido.data.Cliente, dto.status);
+    this.email.NovoStatusPedido(pedido.data.Cliente, dto.status, pedido.data.id);
   }
 }

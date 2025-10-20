@@ -42,8 +42,6 @@ export class EmailService implements OnModuleInit, OnModuleDestroy {
       return;
     }
     const empresaNome = 'Loja Online';
-    const logoUrl =
-      'https://c.pxhere.com/images/dc/ee/f872c1e9c6ea6d87ec04fb011214-1446677.jpg!d';
     const dataHoje = new Date().toLocaleDateString('pt-BR');
 
     const html = `<!DOCTYPE html>

@@ -1,14 +1,14 @@
 # etapa 1 - instalacao de dependencias
 FROM node:24-alpine AS dependences
 WORKDIR /app
-COPY ./backend/package.json ./
+COPY ./package.json ./
 RUN npm install --force
 
 # etapa 2 - construcao do build
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY --from=dependences /app/node_modules ./node_modules
-COPY ./backend .
+COPY . .
 RUN npx prisma generate
 RUN npm run build
 

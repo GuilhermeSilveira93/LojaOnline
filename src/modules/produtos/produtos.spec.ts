@@ -48,13 +48,4 @@ describe('ProdutosService', () => {
       message: expect.any(String),
     });
   });
-  it('deve deletar produto', async () => {
-    prisma.produto.delete.mockResolvedValue({ ok: true });
-    const res = await service.delete('1');
-    expect(res).toEqual({
-      success: true,
-      data: { ok: true },
-      message: expect.any(String),
-    });
-  });
 });

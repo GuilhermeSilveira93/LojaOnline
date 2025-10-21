@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ClientesService } from '../clientes.service';
 import { JwtAuthGuard } from '../../auth/jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/common/roles/roles.guard';
@@ -12,7 +12,31 @@ import { AtualizarClienteDto } from '../dto/atualizarCliente.dto';
 @Roles(Role.ADMIN, Role.VENDEDOR)
 @Controller('clientes')
 export class ClientesUpdateController {
-  constructor(private service: ClientesService) {}
+  constructor(private service: ClientesService) { }
+  @ApiResponse({
+    status: 201,
+    example: {
+      "sucesso": true,
+      "message": "Cliente atualizado",
+      "data": {
+        "id": "uuid cliente",
+        "nome": "nome",
+        "email": "email",
+        "documento": "documento",
+        "telefone": null,
+        "createdAt": "2025-10-20T21:55:18.156Z",
+        "updatedAt": "2025-10-20T21:55:18.156Z"
+      }
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    example: {
+      "message": "Não foi possivel atualizar o cliente",
+      "error": "Not Found",
+      "statusCode": 404
+    },
+  })
   @Put(':idCliente')
   update(
     @Param('idCliente') idCliente: string,

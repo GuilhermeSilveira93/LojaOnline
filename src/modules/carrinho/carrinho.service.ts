@@ -11,7 +11,7 @@ import { tryCatch } from 'src/common/patterns/try-catch';
 
 @Injectable()
 export class CarrinhoService {
-  constructor(private readonly db: PrismaService) { }
+  constructor(private readonly db: PrismaService) {}
 
   async findUnique(userId: string) {
     const [carrinho, carrinhoError] = await tryCatch(
@@ -24,8 +24,13 @@ export class CarrinhoService {
         },
       }),
     );
-    if (carrinhoError || !carrinho) throw new NotFoundException('Carrinho não encontrado.');
-    return { success: true, data: carrinho.CarrinhoItem, message: 'Carrinho encontrado' };
+    if (carrinhoError || !carrinho)
+      throw new NotFoundException('Carrinho não encontrado.');
+    return {
+      success: true,
+      data: carrinho.CarrinhoItem,
+      message: 'Carrinho encontrado',
+    };
   }
   async adicionarProduto(data: IncludeProductDto) {
     await this.db.carrinho.upsert({
@@ -107,7 +112,6 @@ export class CarrinhoService {
   }
 
   async delete(userId: string) {
-    console.log('Deletando carrinho do usuário:', userId);
     const [carrinhoDeletado, error] = await tryCatch(
       this.db.carrinhoItem.deleteMany({
         where: {
@@ -117,7 +121,8 @@ export class CarrinhoService {
         },
       }),
     );
-    if (error || !carrinhoDeletado) throw new NotFoundException('Carrinho não encontrado.');
+    if (error || !carrinhoDeletado)
+      throw new NotFoundException('Carrinho não encontrado.');
     return { sucesso: true, message: 'Carrinho deletado com sucesso' };
   }
 }

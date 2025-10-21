@@ -100,7 +100,11 @@ export class PedidosService {
         }),
       ),
     );
-    return {success: true, data: pedido, message: 'Pedido criado com sucesso' };
+    return {
+      success: true,
+      data: pedido,
+      message: 'Pedido criado com sucesso',
+    };
   }
 
   async listarPorStatusDoVendedor(vendedorId: string, status?: PedidoStatus) {

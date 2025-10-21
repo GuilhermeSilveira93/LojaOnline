@@ -1,8 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { Public, Role, Roles } from 'src/common/roles/roles.decorator';
 import { CreateDto } from '../dto/createUser.dto';

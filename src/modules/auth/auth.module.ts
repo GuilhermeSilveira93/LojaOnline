@@ -19,8 +19,13 @@ import { AuthCreateController } from './controller/auth-create.controller';
       }),
     }),
   ],
-  controllers: [AuthChangeAnotherUserPasswordController, AuthChangePasswordController, AuthLoginController, AuthCreateController],
+  controllers: [
+    AuthChangeAnotherUserPasswordController,
+    AuthChangePasswordController,
+    AuthLoginController,
+    AuthCreateController,
+  ],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -11,8 +11,8 @@ import { Role, Roles } from 'src/common/roles/roles.decorator';
 @Controller('clientes')
 export class ClientesFindByVendorIdController {
   constructor(private service: ClientesService) {}
-  @Get(':idVendedor')
-  findUnique(@Param('idVendedor') idVendedor: string) {
-    return this.service.findUnique(idVendedor);
+  @Get(':idCliente')
+  findUnique(@Param('idCliente') idCliente: string) {
+    return this.service.findUnique(idCliente);
   }
 }

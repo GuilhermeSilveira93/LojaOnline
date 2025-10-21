@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ClientesService } from './clientes.service';
 import { ClientesDeleteController } from './controller/clientes-delete.controller';
 import { ClientesCreateController } from './controller/clientes-create.controller';
-import { ClientesFindByVendorIdController } from './controller/clientes-find-by-vendor-id.controller';
+import { ClientesFindByVendorIdController } from './controller/clientes-find-by-client-id.controller';
 import { ClientesUpdateController } from './controller/clientes-update.controller';
+import { ClientesFindManyController } from './controller/clientes-find-many.controller';
 
 @Module({
   providers: [ClientesService],
@@ -12,7 +13,7 @@ import { ClientesUpdateController } from './controller/clientes-update.controlle
     ClientesCreateController,
     ClientesFindByVendorIdController,
     ClientesUpdateController,
-    ClientesFindByVendorIdController,
+    ClientesFindManyController,
   ],
   exports: [ClientesService],
 })

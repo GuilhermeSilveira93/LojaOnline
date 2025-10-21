@@ -75,7 +75,6 @@ export class PedidosService {
       await this.calcularValorFinal(carrinho);
     const pedido = await this.db.$transaction(async (tx) => {
       await this.abaterEstoqueDepoisDoPedido(tx, carrinho);
-
       const created = await tx.pedido.create({
         data: {
           clienteId,
@@ -101,7 +100,7 @@ export class PedidosService {
         }),
       ),
     );
-    return pedido;
+    return {success: true, data: pedido, message: 'Pedido criado com sucesso' };
   }
 
   async listarPorStatusDoVendedor(vendedorId: string, status?: PedidoStatus) {

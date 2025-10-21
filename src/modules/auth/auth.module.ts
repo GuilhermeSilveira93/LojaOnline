@@ -3,7 +3,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { EnvService } from 'src/common/Env/env.service';
-import { AuthController } from './auth.controller';
+import { AuthChangeAnotherUserPasswordController } from './controller/auth-change-another-user-password.controller';
+import { AuthChangePasswordController } from './controller/auth-change-password.controller';
+import { AuthLoginController } from './controller/auth-login.controller';
+import { AuthCreateController } from './controller/auth-create.controller';
 
 @Module({
   imports: [
@@ -16,8 +19,8 @@ import { AuthController } from './auth.controller';
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthChangeAnotherUserPasswordController, AuthChangePasswordController, AuthLoginController, AuthCreateController],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

@@ -7,6 +7,8 @@ import { ProdutosModule } from './produtos/produtos.module';
 import { ClientesModule } from './clientes/clientes.module';
 import { CarrinhoModule } from './carrinho/carrinho.module';
 import { PedidosModule } from './pedidos/pedidos.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -19,6 +21,12 @@ import { PedidosModule } from './pedidos/pedidos.module';
     CarrinhoModule,
     PedidosModule,
     CarrinhoModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}

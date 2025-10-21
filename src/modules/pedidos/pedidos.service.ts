@@ -8,7 +8,7 @@ import { PrismaService } from '../../shared/prisma.service';
 import { PedidoStatus, Prisma } from '@prisma/client';
 import { ErrorCodes } from '../../common/errors/error-codes';
 import { CarrinhoService } from '../carrinho/carrinho.service';
-import { carrinhoItem } from './pedidos.controller';
+import { carrinhoItem } from './controller/pedidos-update-status.controller';
 import { EmailService } from '../notificacoes/email.service';
 import { tryCatch } from 'src/common/patterns/try-catch';
 
@@ -18,7 +18,7 @@ export class PedidosService {
     private db: PrismaService,
     private carrinho: CarrinhoService,
     private emailService: EmailService,
-  ) { }
+  ) {}
 
   private async abaterEstoqueDepoisDoPedido(
     tx: Prisma.TransactionClient,
@@ -122,7 +122,7 @@ export class PedidosService {
     return { message: 'Pedidos encontrados.', data: pedidos, success: true };
   }
 
-  async obter(vendedorId: string, id: string, userRole: string) {
+  async findByClientId(vendedorId: string, id: string, userRole: string) {
     const [ped, pedError] = await tryCatch(
       this.db.pedido.findUnique({
         where: { id },

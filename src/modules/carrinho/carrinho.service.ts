@@ -10,18 +10,20 @@ import { tryCatch } from 'src/common/patterns/try-catch';
 
 @Injectable()
 export class CarrinhoService {
-  constructor(private readonly db: PrismaService) { }
+  constructor(private readonly db: PrismaService) {}
 
   async findUnique(userId: string) {
-    const [carrinho, carrinhoError] = await tryCatch(this.db.carrinho.findUnique({
-      include: {
-        CarrinhoItem: true
-      },
-      where: {
-        id: userId,
-      },
-    }))
-    if (carrinhoError) throw new NotFoundException('Carrinho não encontrado.')
+    const [carrinho, carrinhoError] = await tryCatch(
+      this.db.carrinho.findUnique({
+        include: {
+          CarrinhoItem: true,
+        },
+        where: {
+          id: userId,
+        },
+      }),
+    );
+    if (carrinhoError) throw new NotFoundException('Carrinho não encontrado.');
     return { success: true, data: carrinho, message: 'Carrinho encontrado' };
   }
   async adicionarProduto(data: IncludeProductDto) {
@@ -30,7 +32,7 @@ export class CarrinhoService {
       update: {},
       create: { id: data.userId },
     });
-    const carrinho = this.db.$transaction(async (tx) => {
+    const carrinho = await this.db.$transaction(async (tx) => {
       const produto = await tx.produto.findUniqueOrThrow({
         where: { id: data.item.produtoId },
         select: {
@@ -45,7 +47,7 @@ export class CarrinhoService {
       if (produto.estoque < data.item.quantidade)
         throw new NotAcceptableException('Estoque insuficiente');
 
-      const precoBase = new Prisma.Decimal(produto.precoBase); // Decimal(10,2)
+      const precoBase = new Prisma.Decimal(produto.precoBase);
       const fatorDesc = new Prisma.Decimal(
         100 - produto.descontoPercentual,
       ).div(100);
@@ -71,7 +73,11 @@ export class CarrinhoService {
         },
       });
     });
-    return { sucesso: true, data: carrinho, message: 'Produto adicionado ao carrinho' };
+    return {
+      sucesso: true,
+      data: carrinho,
+      message: 'Produto adicionado ao carrinho',
+    };
   }
   async deletarProduto(userId: string, productId: string) {
     return this.db.$transaction(async (tx) => {
@@ -100,13 +106,15 @@ export class CarrinhoService {
   }
 
   async delete(userId: string) {
-    const [_, error] = await tryCatch(this.db.carrinhoItem.deleteMany({
-      where: {
-        Carrinho: {
-          id: userId,
+    const [_, error] = await tryCatch(
+      this.db.carrinhoItem.deleteMany({
+        where: {
+          Carrinho: {
+            id: userId,
+          },
         },
-      },
-    }))
+      }),
+    );
     if (error) throw new NotFoundException('Carrinho não encontrado.');
     return { sucesso: true, message: 'Carrinho deletado com sucesso' };
   }

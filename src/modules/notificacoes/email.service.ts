@@ -10,7 +10,7 @@ import { EnvService } from 'src/common/Env/env.service';
 
 @Injectable()
 export class EmailService implements OnModuleInit, OnModuleDestroy {
-  constructor(private readonly envService: EnvService) { }
+  constructor(private readonly envService: EnvService) {}
   private readonly logger = new Logger(EmailService.name);
   private transporter: Transporter;
 

@@ -8,6 +8,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { EnvService } from './common/Env/env.service';
 const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { JwtAuthGuard } from './modules/auth/jwt/jwt-auth.guard';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,

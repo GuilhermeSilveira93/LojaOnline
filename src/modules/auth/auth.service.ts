@@ -16,19 +16,24 @@ export class AuthService {
   constructor(
     private db: PrismaService,
     private jwt: JwtService,
-  ) { }
+  ) {}
 
   async create(email: string, senha: string, role: Role) {
     const senhaHash = await bcrypt.hash(senha, 10);
-    const [user, errorCreateUser] = await tryCatch(this.db.user.create({
-      data: {
-        role,
-        email,
-        senhaHash,
-        nome: email,
-      },
-    }))
-    if (errorCreateUser) throw new BadRequestException('Erro ao criar usuário', { cause: errorCreateUser });
+    const [user, errorCreateUser] = await tryCatch(
+      this.db.user.create({
+        data: {
+          role,
+          email,
+          senhaHash,
+          nome: email,
+        },
+      }),
+    );
+    if (errorCreateUser)
+      throw new BadRequestException('Erro ao criar usuário', {
+        cause: errorCreateUser,
+      });
     return { success: true, message: 'Usuário criado com sucesso', data: user };
   }
 
@@ -50,16 +55,27 @@ export class AuthService {
   }
 
   async changePassword(userId: string, novaSenha: string) {
-    const [user, findUserError] = await tryCatch(this.db.user.findUnique({
-      where: { id: userId },
-    }))
+    const [user, findUserError] = await tryCatch(
+      this.db.user.findUnique({
+        where: { id: userId },
+      }),
+    );
     if (!user || findUserError) throw new BadRequestException();
     const hash = await bcrypt.hash(novaSenha, 10);
-    const [userAtual, error] = await tryCatch(this.db.user.update({
-      where: { id: userId },
-      data: { senhaHash: hash },
-    }))
-    if (error) throw new BadRequestException('Erro ao alterar a senha', { cause: error });
-    return { message: 'Senha Alterada com sucesso', success: true, data: userAtual };
+    const [userAtual, error] = await tryCatch(
+      this.db.user.update({
+        where: { id: userId },
+        data: { senhaHash: hash },
+      }),
+    );
+    if (error)
+      throw new BadRequestException('Erro ao alterar a senha', {
+        cause: error,
+      });
+    return {
+      message: 'Senha Alterada com sucesso',
+      success: true,
+      data: userAtual,
+    };
   }
 }

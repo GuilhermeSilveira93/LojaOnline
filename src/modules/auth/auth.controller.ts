@@ -9,9 +9,8 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/common/roles/roles.guard';
-import { Role, Roles } from 'src/common/roles/roles.decorator';
+import { Public, Role, Roles } from 'src/common/roles/roles.decorator';
 import { ResetSenhaDto } from './dto/resetSenha.dto';
 import { CreateDto } from './dto/createUser.dto';
 import { ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
@@ -21,6 +20,7 @@ import { ApiTags, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
+  @Public()
   @Post('create')
   @ApiResponse({
     status: 201,
@@ -46,20 +46,21 @@ export class AuthController {
   async create(@Body() dto: CreateDto) {
     return this.auth.create(dto.email, dto.senha, dto.role);
   }
-
+  @Public()
   @Post('login')
   async login(@Body() dto: LoginDto) {
     return this.auth.login(dto.email, dto.senha);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseGuards()
   @Patch('change-password')
   async changePassword(@Request() req, @Body() body: ResetSenhaDto) {
     return this.auth.changePassword(req.user.sub, body.novaSenha);
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @Patch('change-password/:userId')
   async adminChangePassword(

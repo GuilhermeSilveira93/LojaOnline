@@ -123,7 +123,7 @@ model CarrinhoItem {
   Carrinho    Carrinho @relation(fields: [ID_CARRINHO], references: [id])
 
   ID_PRODUTO String
-  Produto    Produto @relation(fields: [ID_PRODUTO], references: [id])
+  Produto    Produto @relation(fields: [ID_PRODUTO], references: [id], onDelete: Cascade)
 
   @@unique([ID_CARRINHO, ID_PRODUTO])
 }

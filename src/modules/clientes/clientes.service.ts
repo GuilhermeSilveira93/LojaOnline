@@ -34,7 +34,8 @@ export class ClientesService {
     const [cliente, error] = await tryCatch(
       this.db.cliente.findUnique({ where: { id } }),
     );
-    if (error || !cliente) throw new NotFoundException('cliente não encontrado');
+    if (error || !cliente)
+      throw new NotFoundException('cliente não encontrado');
     return { sucesso: true, message: 'Cliente encontrado', data: cliente };
   }
   async update(id: string, dto: AtualizarClienteDto) {

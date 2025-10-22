@@ -1,13 +1,12 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CarrinhoService } from '../carrinho.service';
-import { JwtAuthGuard } from '../../auth/jwt/jwt-auth.guard';
 
 @ApiTags('Carrinho')
 @ApiBearerAuth()
 @Controller('carrinho')
 export class CarrinhoGetController {
-  constructor(private service: CarrinhoService) { }
+  constructor(private service: CarrinhoService) {}
   @ApiResponse({
     status: 200,
     example: {
@@ -28,9 +27,9 @@ export class CarrinhoGetController {
   @ApiResponse({
     status: 404,
     example: {
-      message: "Carrinho não encontrado.",
-      error: "Not Found",
-      statusCode: 404
+      message: 'Carrinho não encontrado.',
+      error: 'Not Found',
+      statusCode: 404,
     },
   })
   @Get()

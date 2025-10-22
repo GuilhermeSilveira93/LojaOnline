@@ -1,7 +1,6 @@
 import { Controller, Delete, Param, UseGuards, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CarrinhoService } from '../carrinho.service';
-import { JwtAuthGuard } from '../../auth/jwt/jwt-auth.guard';
 
 @ApiTags('Carrinho')
 @ApiBearerAuth()

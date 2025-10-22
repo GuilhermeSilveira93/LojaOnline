@@ -8,11 +8,8 @@ export class CriarClienteDto {
   @IsNotEmpty()
   nome: string;
   @ApiProperty()
-  @ApiProperty()
-  @ApiProperty()
   @IsEmail()
   email: string;
-  @ApiProperty()
   @ApiProperty()
   @IsString()
   documento: string;

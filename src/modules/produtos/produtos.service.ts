@@ -20,7 +20,7 @@ export class ProdutosService {
       }),
     );
     if (!produto || produtoError)
-      throw new BadRequestException('Erro ao criar produto.');
+      throw new ConflictException('Erro ao criar produto.');
     return {
       success: true,
       data: produto,

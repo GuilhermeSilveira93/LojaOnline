@@ -71,8 +71,14 @@ export class PedidosService {
     clienteId: string,
     carrinho: carrinhoItem,
   ) {
-    const { itensSnapshot, totalBruto, totalDesconto, totalLiquido } =
-      await this.calcularValorFinal(carrinho);
+    const [
+      cliente,
+      { itensSnapshot, totalBruto, totalDesconto, totalLiquido },
+    ] = await Promise.all([
+      this.db.cliente.findUnique({ where: { id: clienteId } }),
+      this.calcularValorFinal(carrinho),
+    ]);
+    if (!cliente) throw new BadRequestException('Cliente inexistente');
     const pedido = await this.db.$transaction(async (tx) => {
       await this.abaterEstoqueDepoisDoPedido(tx, carrinho);
       const created = await tx.pedido.create({
@@ -125,21 +131,21 @@ export class PedidosService {
     return { message: 'Pedidos encontrados.', data: pedidos, success: true };
   }
 
-  async findByClientId(vendedorId: string, id: string, userRole: string) {
+  async findByClientId(
+    vendedorId: string,
+    idCliente: string,
+    userRole: string,
+  ) {
     const [ped, pedError] = await tryCatch(
-      this.db.pedido.findUnique({
-        where: { id },
-        include: { PedidoItem: true, Cliente: true },
+      this.db.pedido.findFirst({
+        where: { clienteId: idCliente },
+        include: {
+          PedidoItem: true,
+          Cliente: { select: { nome: true, email: true } },
+        },
       }),
     );
-    if (pedError) throw new BadRequestException();
-    if (!ped) {
-      return {
-        message: 'pedido não encontrado',
-        data: {},
-        success: false,
-      };
-    }
+    if (pedError || !ped) throw new NotFoundException('Pedido não encontrado');
     if (userRole === 'VENDEDOR' && ped.vendedorId !== vendedorId)
       throw new ForbiddenException(ErrorCodes.FORBIDDEN_OWNERSHIP);
     return {
@@ -154,6 +160,7 @@ export class PedidosService {
     idPedido: string,
     novoStatus: PedidoStatus,
   ) {
+    console.log(idPedido, novoStatus);
     const [ped, pedError] = await tryCatch(
       this.db.pedido.findUnique({
         where: { id: idPedido },

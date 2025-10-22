@@ -10,22 +10,22 @@ import { Role, Roles } from 'src/common/roles/roles.decorator';
 @Roles(Role.ADMIN, Role.VENDEDOR)
 @Controller('clientes')
 export class ClientesDeleteController {
-  constructor(private service: ClientesService) { }
+  constructor(private service: ClientesService) {}
 
   @ApiResponse({
     status: 201,
     example: {
-      "sucesso": true,
-      "message": "Cliente deletado",
-      "data": {
-        "id": "uuid",
-        "nome": "nome do cliente",
-        "email": "email do cliente",
-        "documento": "document do cliente",
-        "telefone": null,
-        "createdAt": "2025-10-20T21:55:18.156Z",
-        "updatedAt": "2025-10-20T21:55:18.156Z"
-      }
+      sucesso: true,
+      message: 'Cliente deletado',
+      data: {
+        id: 'uuid',
+        nome: 'nome do cliente',
+        email: 'email do cliente',
+        documento: 'document do cliente',
+        telefone: null,
+        createdAt: '2025-10-20T21:55:18.156Z',
+        updatedAt: '2025-10-20T21:55:18.156Z',
+      },
     },
   })
   @ApiResponse({

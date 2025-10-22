@@ -1,0 +1,91 @@
+@port = 8000
+@baseUrl = http://localhost:{{port}}
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZGI1MWFhMy04NGFlLTQwMmEtYWY4Ny0wZmNmYTQ1OTM0ZmIiLCJub21lIjoiZ3VpbGhlcm1lLnNpbHZlaXJhQGdtYWlsLmNvbS5iciIsImVtYWlsIjoiZ3VpbGhlcm1lLnNpbHZlaXJhQGdtYWlsLmNvbS5iciIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc2MTEzOTcyNywiZXhwIjoxNzYxNzQ0NTI3fQ.vCHgQRRtftK-B09sIyxWB2FDAA10DraRZ7eZaOrCeOE
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWIyYzI4ZDAwMDAxZTQwMWI3Y2E2ZiIsImlhdCI6MTY4ODc0OTYyNH0.dQw4w9WgXcQ
+
+### Auth Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "guilherme.silveira@gmail.com.br",
+  "senha": "softrack"
+}
+### Auth change your password
+PATCH {{baseUrl}}/auth/change-password
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{tokenVendedor}}
+
+{
+  "novaSenha": "softrack2024"
+}
+### Auth change another user password
+PATCH {{baseUrl}}/auth/change-password/564fc420-646a-41d5-bd93-37ce323be7ad
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "novaSenha": "softrack2024"
+}
+### Auth create user
+PATCH {{baseUrl}}/auth/create
+Content-Type: application/json
+Accept: application/json
+
+{
+  "role": "ADMIN",
+	"email": "seuemail@gmail.com",
+	"senha": "sua senha"
+}
+### Produtos
+# @name Produtos
+GET {{baseUrl}}/produtos
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{tokenAdmin}}
+
+### Produtos encontrar unico
+GET {{baseUrl}}/produtos/fb969321-fb4b-41da-8806-bba17dd79ff4
+Authorization: Bearer {{tokenAdmin}}
+
+### Produtos create
+POST {{baseUrl}}/produtos
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "nome": "Placa de vídeo 5010",
+	"descricao": "placa de video top",
+	"precoBase": 15000,
+	"estoque": 500
+}
+
+### Produtos update
+PUT {{baseUrl}}/produtos/fb969321-fb4b-41da-8806-bba17dd79ff4
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "nome": "Placa de vídeo hahaha TI",
+  "descricao": "placa de video top",
+  "precoBase": 10
+}
+
+### Produtos mudar desconto
+PATCH {{baseUrl}}/produtos/desconto/2f034720-5018-416a-91b1-63c8311d08ce
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "desconto": 10
+}
+
+### Produtos encontrar unico
+DELETE {{baseUrl}}/produtos/2f034720-5018-416a-91b1-63c8311d08ce
+Authorization: Bearer {{tokenAdmin}}

@@ -1,26 +1,22 @@
 import {
   Injectable,
-  BadRequestException,
-  ConflictException,
-  NotFoundException,
+  Inject,
 } from '@nestjs/common';
-import { PrismaService } from '../../shared/prisma.service';
 import { CriarProdutoDto } from './dto/criarProduto.dto';
 import { AtualizarProdutoDto } from './dto/AtualizarProduto.dto';
-import { tryCatch } from 'src/common/patterns/try-catch';
+import { PRODUTOSGATEWAYINTERFACE, ProdutosGatewayInterface } from './gateways/produtos-gateway-interface';
+import { Produto } from './entities/produto.entitie';
 
 @Injectable()
 export class ProdutosService {
-  constructor(private db: PrismaService) {}
+  constructor(
+    @Inject(PRODUTOSGATEWAYINTERFACE)
+    private produtoGateway: ProdutosGatewayInterface
+  ) { }
 
   async create(dto: CriarProdutoDto) {
-    const [produto, produtoError] = await tryCatch(
-      this.db.produto.create({
-        data: dto,
-      }),
-    );
-    if (!produto || produtoError)
-      throw new ConflictException('Erro ao criar produto.');
+    const novoProduto = new Produto(dto)
+    const produto = await this.produtoGateway.create(novoProduto)
     return {
       success: true,
       data: produto,
@@ -28,11 +24,7 @@ export class ProdutosService {
     };
   }
   async findMany() {
-    const [produtos, produtosError] = await tryCatch(
-      this.db.produto.findMany(),
-    );
-    if (produtosError || !produtos)
-      throw new NotFoundException('Nenhum produto encontrado.');
+    const produtos = await this.produtoGateway.findMany()
     return {
       success: true,
       message: 'Produtos Encontrados',
@@ -40,12 +32,7 @@ export class ProdutosService {
     };
   }
   async findUnique(id: string) {
-    const [produto, produtoError] = await tryCatch(
-      this.db.produto.findUnique({ where: { id } }),
-    );
-    if (!produto || produtoError)
-      throw new NotFoundException('Nenhum produto encontrado.');
-
+    const produto = await this.produtoGateway.findUnique(id)
     return {
       success: true,
       data: produto,
@@ -53,11 +40,7 @@ export class ProdutosService {
     };
   }
   async update(id: string, dto: AtualizarProdutoDto) {
-    const [produto, produtoError] = await tryCatch(
-      this.db.produto.update({ where: { id }, data: dto }),
-    );
-    if (produtoError || !produto)
-      throw new NotFoundException('Produto não encontrado.');
+    const produto = await this.produtoGateway.update(id, dto)
     return {
       success: true,
       data: produto,
@@ -65,11 +48,7 @@ export class ProdutosService {
     };
   }
   async delete(id: string) {
-    const [produto, produtoError] = await tryCatch(
-      this.db.produto.delete({ where: { id } }),
-    );
-    if (produtoError || !produto)
-      throw new NotFoundException('Produto não encontrado.');
+    const produto = await this.produtoGateway.delete(id)
     return {
       success: true,
       data: produto,
@@ -78,16 +57,7 @@ export class ProdutosService {
   }
 
   async updateDescount(idProduto: string, desconto: number) {
-    const [produto, produtoError] = await tryCatch(
-      this.db.produto.update({
-        where: {
-          id: idProduto,
-        },
-        data: { descontoPercentual: desconto },
-      }),
-    );
-    if (produtoError || !produto)
-      throw new NotFoundException('Produto não encontrado.');
+    const produto = await this.produtoGateway.updateDesconto(idProduto, desconto)
     return {
       success: true,
       data: produto,

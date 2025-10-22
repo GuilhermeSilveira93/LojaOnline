@@ -6,9 +6,17 @@ import { ProdutosFindUniqueController } from './controller/produtos-find-unique.
 import { ProdutosUpdateController } from './controller/produtos-update.controller';
 import { ProdutosCreateController } from './controller/produtos-create.controller';
 import { ProdutosDeleteController } from './controller/produtos-delete.controller';
+import { PRODUTOSGATEWAYINTERFACE } from './gateways/produtos-gateway-interface';
+import { ProdutosGatewayPrisma } from './gateways/produtos-gateway-prisma';
 
 @Module({
-  providers: [ProdutosService],
+  providers: [
+    ProdutosService,
+    {
+      provide: PRODUTOSGATEWAYINTERFACE,
+      useClass: ProdutosGatewayPrisma,
+    },
+  ],
   controllers: [
     ProdutosFindManyController,
     ProdutosFindUniqueController,

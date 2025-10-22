@@ -46,7 +46,6 @@ export class ProdutosDeleteController {
   })
   @Delete(':idProduto')
   delete(@Param('idProduto') idProduto: string) {
-    console.log('Delete chamado para idProduto:', idProduto);
     return this.service.delete(idProduto);
   }
 }

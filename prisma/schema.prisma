@@ -26,7 +26,7 @@ model Produto {
   id                 String   @id @default(uuid())
   nome               String   @unique()
   descricao          String?
-  precoBase          Decimal  @db.Decimal(10, 2)
+  precoBase          Int
   descontoPercentual Int      @default(0)
   estoque            Int      @default(0)
   ativo              Boolean  @default(true)

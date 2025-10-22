@@ -160,7 +160,6 @@ export class PedidosService {
     idPedido: string,
     novoStatus: PedidoStatus,
   ) {
-    console.log(idPedido, novoStatus);
     const [ped, pedError] = await tryCatch(
       this.db.pedido.findUnique({
         where: { id: idPedido },

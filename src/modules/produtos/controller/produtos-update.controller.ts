@@ -45,8 +45,8 @@ export class ProdutosUpdateController {
       statusCode: 404,
     },
   })
-  @Put(':id')
-  update(@Param('id') id: string, @Body() dto: AtualizarProdutoDto) {
-    return this.service.update(id, dto);
+  @Put(':idProduto')
+  update(@Param('idProduto') idProduto: string, @Body() dto: AtualizarProdutoDto) {
+    return this.service.update(idProduto, dto);
   }
 }

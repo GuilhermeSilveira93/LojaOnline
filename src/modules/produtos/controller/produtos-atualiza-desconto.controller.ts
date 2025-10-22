@@ -61,6 +61,6 @@ export class ProdutosAtualizarDescontoController {
     @Body() data: AtualizarDescontoDto,
     @Param('idProduto') idProduto: string,
   ) {
-    return this.service.updateDescount(idProduto, data.desconto);
+    return this.service.updateDesconto(idProduto, data.desconto);
   }
 }

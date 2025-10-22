@@ -27,7 +27,7 @@ describe('ProdutosService', () => {
     expect(produto.data.nome).toBe('Produto 1 Atualizado');
   })
   it('deve atualizar o desconto do produto', async () => {
-    const produto = await service.updateDescount('1', 15);
+    const produto = await service.updateDesconto('1', 15);
     expect(produto.data.descontoPercentual).toBe(15);
   })
   it('deve deletar um produto', async () => {

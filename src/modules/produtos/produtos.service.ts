@@ -56,7 +56,7 @@ export class ProdutosService {
     };
   }
 
-  async updateDescount(idProduto: string, desconto: number) {
+  async updateDesconto(idProduto: string, desconto: number) {
     const produto = await this.produtoGateway.updateDesconto(idProduto, desconto)
     return {
       success: true,

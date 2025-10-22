@@ -17,8 +17,10 @@ export class ProdutosGatewayPrisma implements ProdutosGatewayInterface {
         estoque: produto.estoque,
       }
     }))
-    if (!produto || produtoError)
+    if (!produto || produtoError) {
+      this.logger.error(`Erro ao criar produto: ${produtoError?.message}`);
       throw new ConflictException('Erro ao criar produto.');
+    }
     return createdProduto
   }
   async findMany(): Promise<Array<Produto>> {
@@ -34,24 +36,30 @@ export class ProdutosGatewayPrisma implements ProdutosGatewayInterface {
     const [produto, produtoError] = await tryCatch(
       this.db.produto.findUnique({ where: { id } }),
     );
-    if (!produto || produtoError)
-      throw new NotFoundException('Nenhum produto encontrado.');
+    if (!produto || produtoError) {
+      this.logger.error(`Nenhum produto encontrado error: ${produtoError?.message}`);
+      throw new NotFoundException('Nenhum produto encontrado.')
+    }
     return produto
   }
   async update(id: string, dto: Partial<Produto>): Promise<Produto> {
     const [produto, produtoError] = await tryCatch(
       this.db.produto.update({ where: { id }, data: dto }),
     );
-    if (produtoError || !produto)
+    if (produtoError || !produto) {
+      this.logger.error(`update produto: ${produtoError?.message}`);
       throw new NotFoundException('Produto não encontrado.')
+    }
     return produto
   }
   async delete(id: string): Promise<Produto> {
     const [produto, produtoError] = await tryCatch(
       this.db.produto.delete({ where: { id } }),
     );
-    if (produtoError || !produto)
-      throw new NotFoundException('Produto não encontrado.');
+    if (produtoError || !produto) {
+      this.logger.error(`delete produto: ${produtoError?.message}`);
+      throw new NotFoundException('Produto não encontrado.')
+    }
     return produto
   }
   async updateDesconto(idProduto: string, descontoPercentual: number): Promise<Produto> {
@@ -63,8 +71,10 @@ export class ProdutosGatewayPrisma implements ProdutosGatewayInterface {
         data: { descontoPercentual },
       }),
     );
-    if (produtoError || !produto)
-      throw new NotFoundException('Produto não encontrado.');
+    if (produtoError || !produto) {
+      this.logger.error(`delete produto: ${produtoError?.message}`);
+      throw new NotFoundException('Produto não encontrado.')
+    }
     return produto
   }
 }

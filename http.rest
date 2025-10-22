@@ -77,15 +77,15 @@ Authorization: Bearer {{tokenAdmin}}
 }
 
 ### Produtos mudar desconto
-PATCH {{baseUrl}}/produtos/desconto/2f034720-5018-416a-91b1-63c8311d08ce
+PATCH {{baseUrl}}/produtos/desconto/fb969321-fb4b-41da-8806-bba17dd79ff4
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{tokenAdmin}}
 
 {
-  "desconto": 10
+  "desconto": 50
 }
 
-### Produtos encontrar unico
-DELETE {{baseUrl}}/produtos/2f034720-5018-416a-91b1-63c8311d08ce
+### Produtos deletar
+DELETE {{baseUrl}}/produtos/fb969321-fb4b-41da-8806-bba17dd79ff4
 Authorization: Bearer {{tokenAdmin}}

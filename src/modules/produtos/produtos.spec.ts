@@ -1,51 +1,37 @@
-import { Test } from '@nestjs/testing';
 import { ProdutosService } from './produtos.service';
-import { PrismaService } from '../../shared/prisma.service';
+import { ProdutosGatewayInMemory } from './gateways/produtos-gateway-in-memory';
 
 describe('ProdutosService', () => {
   let service: ProdutosService;
-  const prisma = {
-    produto: {
-      create: jest.fn(),
-      update: jest.fn(),
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      delete: jest.fn(),
-    },
-  } as any;
-
-  beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      providers: [
-        ProdutosService,
-        { provide: PrismaService, useValue: prisma },
-      ],
-    }).compile();
-    service = module.get(ProdutosService);
+  let produtoGateway: ProdutosGatewayInMemory
+  beforeAll(async () => {
+    produtoGateway = new ProdutosGatewayInMemory()
+    service = new ProdutosService(produtoGateway)
   });
 
   it('deve criar produto', async () => {
-    prisma.produto.create.mockResolvedValue({ id: '1', nome: 'X' });
-    const res = await service.create({
-      nome: 'X',
-      descricao: '',
-      precoBase: 10,
-      estoque: 5,
-      ativo: true,
-    });
-    expect(res).toEqual({
-      success: true,
-      data: { id: '1', nome: 'X' },
-      message: expect.any(String),
-    });
+    const produto = await service.create({ estoque: 10, nome: 'Produto 1', descricao: 'Descricao 1', precoBase: 100 });
+    expect(produto.data).toHaveProperty('id');
+    expect(produto.data.nome).toBe('Produto 1');
   });
-  it('deve deletar produto', async () => {
-    prisma.produto.delete.mockResolvedValue({ ok: true });
-    const res = await service.delete('1');
-    expect(res).toEqual({
-      success: true,
-      data: { ok: true },
-      message: expect.any(String),
-    });
+  it('deve listar os produtos', async () => {
+    const produtos = await service.findMany();
+    expect(produtos.data.length).toBe(1);
   });
+  it('deve encontrar um produto', async () => {
+    const produto = await service.findUnique('1');
+    expect(produto.data).toHaveProperty('id', '1');
+  });
+  it('deve atualizar um produto', async () => {
+    const produto = await service.update('1', { nome: 'Produto 1 Atualizado' });
+    expect(produto.data.nome).toBe('Produto 1 Atualizado');
+  })
+  it('deve atualizar o desconto do produto', async () => {
+    const produto = await service.updateDescount('1', 15);
+    expect(produto.data.descontoPercentual).toBe(15);
+  })
+  it('deve deletar um produto', async () => {
+    const produto = await service.delete('1');
+    expect(produto.data).toHaveProperty('id', '1');
+  })
 });

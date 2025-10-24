@@ -39,8 +39,8 @@ export class CarrinhoService {
       create: { id: data.userId },
     });
     const carrinho = await this.db.$transaction(async (tx) => {
-      const produto = await tx.produto.findUniqueOrThrow({
-        where: { id: data.item.produtoId },
+      const produto = await tx.produto.findUnique({
+        where: { id: data.item.produtoId, ativo: true },
         select: {
           precoBase: true,
           descontoPercentual: true,
@@ -48,8 +48,7 @@ export class CarrinhoService {
           estoque: true,
         },
       });
-
-      if (!produto.ativo) throw new ForbiddenException('Produto inativo');
+      if (!produto) throw new NotFoundException('Produto inativo ou inexistente');
       if (produto.estoque < data.item.quantidade)
         throw new NotAcceptableException('Estoque insuficiente');
 

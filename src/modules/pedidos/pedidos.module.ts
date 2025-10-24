@@ -6,6 +6,8 @@ import { EmailModule } from '../notificacoes/email.module';
 import { PedidosCriarController } from './controller/pedidos-create-post.controller';
 import { PedidosFindByClientIdController } from './controller/pedidos-find-by-client-id.controller';
 import { PedidosFindByStatusController } from './controller/pedidos-find-by-status.controller';
+import { PEDIDOSSGATEWAYINTERFACE } from './gateways/pedidos-gateway-interface';
+import { PedidosGatewayPrisma } from './gateways/pedidos-gateway-prisma';
 
 @Module({
   imports: [EmailModule, CarrinhoModule],
@@ -15,6 +17,12 @@ import { PedidosFindByStatusController } from './controller/pedidos-find-by-stat
     PedidosFindByClientIdController,
     PedidosFindByStatusController,
   ],
-  providers: [PedidosService],
+  providers: [
+    PedidosService,
+    {
+      provide: PEDIDOSSGATEWAYINTERFACE,
+      useClass: PedidosGatewayPrisma
+    }
+  ],
 })
 export class PedidosModule {}

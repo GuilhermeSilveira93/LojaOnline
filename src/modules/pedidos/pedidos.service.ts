@@ -3,6 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
   NotFoundException,
+  Inject,
 } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma.service';
 import { PedidoStatus, Prisma } from '@prisma/client';
@@ -11,32 +12,23 @@ import { CarrinhoService } from '../carrinho/carrinho.service';
 import { carrinhoItem } from './controller/pedidos-update-status.controller';
 import { EmailService } from '../notificacoes/email.service';
 import { tryCatch } from 'src/common/patterns/try-catch';
-
+import { Pedido } from './entities/pedido.entitie';
+import { PedidosGatewayInterface, PEDIDOSSGATEWAYINTERFACE } from './gateways/pedidos-gateway-interface';
 @Injectable()
 export class PedidosService {
   constructor(
+    @Inject(PEDIDOSSGATEWAYINTERFACE)
+    private PedidosGatewayPrisma: PedidosGatewayInterface,
     private db: PrismaService,
     private carrinho: CarrinhoService,
     private emailService: EmailService,
-  ) {}
+  ) { }
 
   private async abaterEstoqueDepoisDoPedido(
     tx: Prisma.TransactionClient,
     itens: carrinhoItem,
   ) {
-    for (const i of itens) {
-      const updated = await tx.produto.updateMany({
-        where: {
-          id: i.ID_PRODUTO,
-          estoque: { gte: i.quantidade },
-          ativo: true,
-        },
-        data: { estoque: { decrement: i.quantidade } },
-      });
-      if (updated.count === 0) {
-        throw new BadRequestException(ErrorCodes.STOCK_INSUFFICIENT);
-      }
-    }
+
   }
 
   private async calcularValorFinal(itens: carrinhoItem) {
@@ -71,41 +63,7 @@ export class PedidosService {
     clienteId: string,
     carrinho: carrinhoItem,
   ) {
-    const [
-      cliente,
-      { itensSnapshot, totalBruto, totalDesconto, totalLiquido },
-    ] = await Promise.all([
-      this.db.cliente.findUnique({ where: { id: clienteId } }),
-      this.calcularValorFinal(carrinho),
-    ]);
-    if (!cliente) throw new BadRequestException('Cliente inexistente');
-    const pedido = await this.db.$transaction(async (tx) => {
-      await this.abaterEstoqueDepoisDoPedido(tx, carrinho);
-      const created = await tx.pedido.create({
-        data: {
-          clienteId,
-          vendedorId,
-          totalBruto,
-          totalDesconto,
-          totalLiquido,
-          status: PedidoStatus.CRIADO,
-          PedidoItem: {
-            create: itensSnapshot.map((i) => ({ ...i })),
-          },
-        },
-        include: { PedidoItem: true, Cliente: true },
-      });
-      await this.carrinho.delete(vendedorId);
-      return created;
-    });
-    await Promise.all(
-      carrinho.map((i) =>
-        this.db.produto.update({
-          where: { id: i.ID_PRODUTO },
-          data: { estoque: { decrement: i.quantidade } },
-        }),
-      ),
-    );
+    const pedido = await this.PedidosGatewayPrisma.criarPedidoAPartirDoCarrinho(vendedorId, clienteId, carrinho)
     return {
       success: true,
       data: pedido,
@@ -137,13 +95,7 @@ export class PedidosService {
     userRole: string,
   ) {
     const [ped, pedError] = await tryCatch(
-      this.db.pedido.findFirst({
-        where: { clienteId: idCliente },
-        include: {
-          PedidoItem: true,
-          Cliente: { select: { nome: true, email: true } },
-        },
-      }),
+      this.db.pedido.findFirst({ where: { clienteId: idCliente } }),
     );
     if (pedError || !ped) throw new NotFoundException('Pedido não encontrado');
     if (userRole === 'VENDEDOR' && ped.vendedorId !== vendedorId)
